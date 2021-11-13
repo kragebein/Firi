@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 
 import json
 import timeout_decorator
@@ -22,13 +24,13 @@ class Messages():
         self.bean = Bean()
         self.job = None
 
-    # We have 1.5 seconds to catch the correct job.
-    @timeout_decorator.timeout(1.5, use_signals=False)
-    def sendAndWait(self, name):
+    # We have 2 seconds to catch the correct job.
+    @timeout_decorator.timeout(3, use_signals=False)
+    def sendAndWait(self, name: str) -> str:
         ''' Sends the reply and awaits the response response'''
         BODY = json.dumps(
             {
-                'respoe': RESPONSE,
+                'response_queue': RESPONSE,
                 'field': 'name',
                 'value': name
             }
@@ -43,8 +45,8 @@ class Messages():
                 message = json.loads(response.body)
                 if message.get('responseTo', False) != self.pending:
                     # This is not the message we are looking for
-                    # So we bury the other messages unil other instances
-                    # can claim their buried Job.
+                    # So we bury theese unil other instances
+                    # can claim their rightful Job.
                     self.bean.client.bury(response)
                 elif message.get('responseTo', False) == self.pending:
                     # THIS is the message we are looking for, return it.
@@ -53,7 +55,7 @@ class Messages():
 
 
 @app.route('/add/<name>', methods=(['GET', 'POST']))
-def addThis(name: str) -> int:
+def addThis(name: str) -> str:
     ''' Sends the message through the tube, returns rowID'''
     message = Messages()
     try:

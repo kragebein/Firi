@@ -24,8 +24,8 @@ class Messages():
         self.bean = Bean()
         self.job = None
 
-    # We have 2 seconds to catch the correct job.
-    @timeout_decorator.timeout(3, use_signals=False)
+    # We have 1 seconds to complete the Job
+    @timeout_decorator.timeout(1, use_signals=False)
     def sendAndWait(self, name: str) -> str:
         ''' Sends the reply and awaits the response response'''
         BODY = json.dumps(
